@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.nav-link {
+	@apply text-neutral-500 text-sm hover:text-neutral-700 hover:underline underline-offset-2 duration-300 transition-colors
+}
