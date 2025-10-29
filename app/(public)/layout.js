@@ -6,7 +6,9 @@ const PublicLayout = ({ children }) => {
 	return (
 		<main>
 			<Navbar />
-			{children}
+			<section className='mt-20'>
+				{children}
+			</section>
 			<Footer />
 		</main>
 	)

@@ -1,15 +1,17 @@
 import React from 'react'
 import imageUrlBuilder from '@sanity/image-url'
-import { client } from '@/sanity/lib/client'
+import { sanityFetch } from '@/sanity/lib/live'
 import { getPost } from '@/sanity/lib/queries'
 import Image from 'next/image'
 import Link from 'next/link'
+import { client } from '@/sanity/lib/client'
 import TextBlock from '@/components/text-block'
+import { Tag } from 'lucide-react'
 
 const PostPage = async ({ params }) => {
 	const { id } = await params
-	const post = await client.fetch(getPost, { slug: id })
-	const builder = imageUrlBuilder(client)
+  const { data: post } = await sanityFetch({ query: getPost, params: { slug: id } })
+  const builder = imageUrlBuilder(client)
 
 	if (!post) {
 		return <div>Post non trovato</div>
@@ -18,10 +20,11 @@ const PostPage = async ({ params }) => {
 	return (
 		<div className="max-w-7xl mx-auto p-6">
 			<article>
-				<div className='flex items-center justify-between'>
-					<h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-					<div className='text-sm bg-neutral-100 hover:bg-neutral-200 duration-300 transition-colors rounded-lg px-2 py-1 w-fit'>
-						<Link href={'/blog/categories/' + post.category.slug}>
+				<div className='flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between mb-4'>
+					<h1 className="text-4xl font-bold">{post.title}</h1>
+					<div className='text-sm mb-2 sm:mb-0 bg-neutral-100 hover:bg-neutral-200 duration-300 transition-colors rounded-lg px-2 py-1 w-fit'>
+						<Link href={'/blog/categories/' + post.category.slug} className='flex items-center gap-1'>
+							<Tag size={12} />
 							{post.category.title}
 						</Link>
 					</div>

@@ -1,4 +1,4 @@
-import { client } from '@/sanity/lib/client'
+import { sanityFetch } from '@/sanity/lib/live'
 import Link from 'next/link'
 import React from 'react'
 import { getCategories, getPosts } from '@/sanity/lib/queries'
@@ -6,14 +6,13 @@ import Post from '@/components/post'
 import { Newspaper } from 'lucide-react'
 
 const BlogPage = async () => {
-	const posts = await client.fetch(getPosts)
-	const categories = await client.fetch(getCategories)
+	const { data: posts } = await sanityFetch({ query: getPosts })
+	const { data: categories } = await sanityFetch({ query: getCategories })
 
 	return (
 		<section className='max-w-7xl mx-auto'>
 			<h2 className='text-3xl mx-4 mt-10 font-bold tracking-tight flex items-center gap-2'><Newspaper size={24} /> Blog</h2>
 			<section id='categories' className='mx-4 mb-10 mt-4'>
-				<h3 className="text-2xl mb-4 font-bold tracking-tight">Categorie</h3>
 				<div className='flex items-center gap-2 flex-wrap'>
 					{categories.map(category => (
 						<Link
@@ -40,7 +39,7 @@ const BlogPage = async () => {
           ))}
         </div>
         <div className="mx-auto w-fit mt-10">
-          <Link href='/blog' className="bg-[#6662a9] hover:bg-[#4f4c82] text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200">
+          <Link href='/blog' className="bg-neutral-800 hover:bg-neutral-600 text-white font-light text-sm py-3 px-8 rounded-lg transition-colors duration-200">
             Guarda tutti
           </Link>
         </div>

@@ -1,4 +1,5 @@
 import "./globals.css";
+import { SanityLive } from "@/sanity/lib/live";
 
 export const metadata = {
   title: "Sanity.io + Next.js Blog",
@@ -10,6 +11,7 @@ export default function RootLayout({ children }) {
     <html lang="it">
       <body>
         {children}
+        <SanityLive />
       </body>
     </html>
   );

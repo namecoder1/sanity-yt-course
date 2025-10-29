@@ -28,7 +28,7 @@ const components = {
     h3: ({children}) => <h3 className="text-lg font-semibold mt-8 mb-1">{children}</h3>,
   },
   list: {
-    bullet: ({children}) => <ul className="my-2 flex flex-col items-start justify-start">{children}</ul>
+    bullet: ({children}) => <ul className="my-2 flex flex-col items-start justify-start text-neutral-600">{children}</ul>
   },
   listItem: {
     bullet: ({children}) => <li className="my-3 flex items-start gap-2">•<span>{children}</span></li>
