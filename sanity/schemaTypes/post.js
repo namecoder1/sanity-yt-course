@@ -58,6 +58,31 @@ export const post = defineType({
 			name: 'text',
 			title: 'Testo',
 			type: 'blockContent'
+		}),
+		defineField({
+			name: 'featured',
+			title: 'In Evidenza',
+			type: 'boolean'
+		}),
+		defineField({
+			name: 'views',
+			title: 'Visualizzazioni',
+			type: 'number'
+		}),
+		defineField({
+			name: 'tags',
+			title: 'Tags',
+			type: 'array',
+			of: [{ type: 'string' }],
+			options: {
+				layout: 'tags'
+			}
+		}),
+		defineField({
+			name: 'author',
+			title: 'Autore',
+			type: 'reference',
+			to: { type: 'author' }
 		})
 	]
 })

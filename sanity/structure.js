@@ -5,4 +5,5 @@ export const structure = (S) =>
     .items([
       S.documentTypeListItem('post').title('Posts'),
       S.documentTypeListItem('postCategory').title('Categorie Posts'),
+      S.documentTypeListItem('author').title('Autori'),
     ])

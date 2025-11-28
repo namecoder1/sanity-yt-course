@@ -1,0 +1,203 @@
+// Query basica
+
+*[_type == "post"]{title}
+
+// - *
+// - [_type == "post"]
+// - {title}
+
+// 1. FILTERS ----------------------------------------------------
+
+// Tutti i documenti
+*[]
+
+// Tutti i post
+*[_type == "post"]
+
+// Singolo documento per _id
+*[_id == "05b0443e-7dd9-4384-b8b0-d8b2d65af097"][0]
+
+// Solo alcuni tipi
+*[_type in ["post", "page"]]
+
+// Filtri combinati (AND / OR)
+*[_type == "post" && publishedAt > "2025-10-28"]
+*[_type == "post" && (featured == true && views > 5)]
+
+// Comparazioni numeriche / date
+*[_type == "post" && views > 10]
+*[_type == "post" && dateTime(_updatedAt) > dateTime(now()) - 60*60*24*7] // ultimi 7 giorni
+
+// Boolean / defined
+*[_type == "post" && publishedAt == null] // non pubblicati
+*[_type == "post" && defined(publishedAt)] // pubblicati
+
+// Valore in un array
+*[_type == "post" && "sanity" in tags]
+
+// Slug annidato
+*[_type == "post" && slug.current == "tailwind-il-linguaggio-visivo-del-web-moderno"]
+
+
+// 2. TEXT MATCHING ----------------------------------------------
+
+// Il campo title contiene una parola simile a "sanity"
+*[_type == "post" && title match "tailwind*"] // no case sensitive
+
+// Titolo o body contengono termini
+*[_type == "post" && [title, text, excerpt] match ["cloud"]]
+
+// Cercare testo in Portable Text
+*[_type == "post" && text[].children[].text match "cloud"]
+
+
+// 3. SLICE OPERATIONS -------------------------------------------
+
+// Primo post
+*[_type == "post"][0]
+
+// I primi 5 post più recenti
+*[_type == "post"] | order(publishedAt desc)[0...5]
+
+// 5 post dopo averne saltati 5
+*[_type == "post"] | order(publishedAt desc)[5...10]
+
+
+// 4. ORDERING ---------------------------------------------------
+
+// Ordina per data di creazione
+*[_type == "post"] | order(_createdAt desc)
+
+// Ordina per titolo ignorando il case
+*[_type == "post"] | order(lower(title) asc)
+
+// Paginazione con parametri esterni
+*[_type == "post"] | order(_createdAt desc)[$start...$end]
+
+
+// 5. JOINS (REFERENCES) -----------------------------------------
+
+// Post con autore dereferenziato
+*[_type == "post"]{
+  title,
+  author->{
+    name,
+    role
+  }
+}
+
+// Post con categorie (references -> dereference)
+*[_type == "post"]{
+  title,
+  "category": category->title
+}
+
+// Autore con lista di post collegati (uso di ^ e references)
+*[_type == "author"]{
+  name,
+  "posts": *[_type == "post" && references(^._id)]{
+    title,
+    publishedAt
+  }
+}
+
+{"id": "05b0443e-7dd9-4384-b8b0-d8b2d65af097"}
+
+
+// 6. OBJECTS & ARRAYS -------------------------------------------
+
+// Oggetto "dashboard" con due liste dentro
+{
+  "latestPosts": *[_type == "post"] | order(publishedAt desc)[0...3]{
+    title,
+    slug,
+    publishedAt
+  },
+  "allTags": array::unique(*[_type == "post"].tags[])
+}
+
+
+// 7. OBJECT PROJECTIONS -----------------------------------------
+
+// Solo alcuni campi
+*[_type == "post"]{
+  title,
+  "slug": slug.current
+}
+
+// Aggiungo campi calcolati + tutti i campi
+*[_type == "post"]{
+  "excerpt": text[0].children[0].text,
+  "hasCover": defined(image),
+    title
+}
+
+// Numero di tag per post
+*[_type == "post"]{
+  title,
+  "tagCount": count(tags)
+}
+
+
+// 8. SPECIAL VARIABLES (*, @, ^) --------------------------------
+
+// ^ – documento genitore in una sotto-query
+*[_type == "author"]{
+  name,
+  "recentPosts": *[_type == "post" && references(^._id)] | order(publishedAt desc)[0...3]{
+    title
+  }
+}
+
+{"id": "05b0443e-7dd9-4384-b8b0-d8b2d65af097"}
+
+// 9. CONDITIONALS -----------------------------------------------
+
+// select() per mappare un valore "leggibile"
+*[_type == "post"]{
+  title,
+  "popularityLabel": select(
+    views > 20 => "high",
+    views > 10 => "medium",
+    "low"
+  )
+}
+
+// Condizionali in proiezione
+*[_type == "post"]{
+  title,
+  publishedAt >= "2025-10-01" => {
+    "isNew": true
+  },
+  views > 5 => {
+    "isTrending": true
+  }
+}
+
+
+// 10. FUNCTIONS -------------------------------------------------
+
+// count: numero di post pubblicati
+{
+  "publishedPostCount": count(*[_type == "post" && defined(publishedAt)])
+}
+
+
+// 12. ARITHMETIC & CONCATENATION -------------------------------
+
+// Operazioni numeriche
+{
+  "total": 3 + 2,
+  "discounted": 100 - 20,
+  "doubled": 10 * 2
+}
+
+// Concatenare stringhe
+*[_type == "post"]{
+  "fullTitle": title + " – " + category->title
+}
+
+// Concatenare array
+{
+  "merged": [1,2] + [3,4]
+}
