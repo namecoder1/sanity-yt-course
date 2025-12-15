@@ -14,6 +14,16 @@ export const dynamic = 'force-static'
 
 export { metadata, viewport } from 'next-sanity/studio'
 
-export default function StudioPage() {
-  return <NextStudio config={config} />
+import { draftMode } from 'next/headers'
+import { DisableDraftMode } from '@/components/utils/disable-draft-mode'
+
+export default async function StudioPage() {
+  const isDraftMode = (await draftMode()).isEnabled;
+
+  return (
+    <>
+      {isDraftMode && <DisableDraftMode />}
+      <NextStudio config={config} />
+    </>
+  )
 }
